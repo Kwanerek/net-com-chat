@@ -6,7 +6,8 @@ const io = require('socket.io')(http);
 const PORT = process.env.PORT || 3000;
 http.listen(PORT, '0.0.0.0', () => {
   console.log(`Serwer działa na porcie ${PORT}`);
-  
+  });
+
 app.use(express.static('public'));
 
 io.on('connection', (socket) => {
