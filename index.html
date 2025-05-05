@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <title>net.com - Czat online</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="chat-container">
+    <h1>💬 net.com – Czat</h1>
+    <div id="chat-box" class="chat-box"></div>
+    <form id="chat-form" class="chat-form">
+      <input type="text" id="name" placeholder="Twoje imię" required />
+      <input type="text" id="message" placeholder="Wpisz wiadomość" required />
+      <button type="submit">Wyślij</button>
+    </form>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const chatBox = document.getElementById('chat-box');
+    const chatForm = document.getElementById('chat-form');
+    const nameInput = document.getElementById('name');
+    const messageInput = document.getElementById('message');
+
+    chatForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = nameInput.value.trim();
+      const message = messageInput.value.trim();
+      if (name && message) {
+        const time = new Date().toLocaleTimeString();
+        socket.emit('chat message', { name, message, time });
+        messageInput.value = '';
+      }
+    });
+
+    socket.on('chat message', ({ name, message, time }) => {
+      const msg = `<div class="chat-message"><strong>${name}</strong> <span class="time">[${time}]</span>: ${message}</div>`;
+      chatBox.innerHTML += msg;
+      chatBox.scrollTop = chatBox.scrollHeight;
+    });
+  </script>
+</body>
+</html>
