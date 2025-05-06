@@ -1,15 +1,13 @@
 const express = require('express');
-const app = express();
-const http = require('http').createServer(app);
-const io = require('socket.io')(http);
 const path = require('path');
+const app = express();
 
-let messages = [];
+// Serwowanie plików statycznych z katalogu 'public'
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(express.static(path.join(__dirname, 'public'))); // zakładamy, że index.html i style.css są w folderze 'public'
-
+// Obsługa żądania GET na '/'
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public/index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 io.on('connection', (socket) => {
