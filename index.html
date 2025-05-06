@@ -2,68 +2,27 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>net.com chat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>net.com - czat</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <button id="toggle-theme">🌓 Zmień motyw</button>
-  <h1>net.com</h1>
-
-  <ul id="messages"></ul>
-
-  <form id="chat-form">
-    <input id="message-input" autocomplete="off" placeholder="Napisz coś..." />
-    <button type="submit">Wyślij</button>
-  </form>
-
+  <div class="theme-toggle">
+    <label>
+      <input type="checkbox" id="themeSwitch" />
+      🌞/🌙
+    </label>
+  </div>
+  <div id="chat">
+    <input id="name" type="text" placeholder="Twoje imię..." />
+    <ul id="messages"></ul>
+    <form id="form">
+      <input id="input" autocomplete="off" placeholder="Napisz wiadomość..." />
+      <button>Wyślij</button>
+    </form>
+  </div>
   <script src="/socket.io/socket.io.js"></script>
-  <script>
-    const socket = io();
-    const form = document.getElementById('chat-form');
-    const input = document.getElementById('message-input');
-    const messages = document.getElementById('messages');
-
-    // Odbiór wiadomości
-    socket.on('chat message', (msg) => {
-      const li = document.createElement('li');
-      li.id = msg.id;
-      li.classList.add('fade-in');
-      li.innerHTML = `
-        <span>${msg.text}</span>
-        <button class="delete-btn">🗑️</button>
-      `;
-      li.querySelector('.delete-btn').addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (confirm('Usunąć tę wiadomość?')) {
-          socket.emit('delete message', msg.id);
-        }
-      });
-      messages.appendChild(li);
-    });
-
-    // Wysyłanie wiadomości
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      if (input.value.trim()) {
-        const msg = { id: Date.now().toString(), text: input.value.trim() };
-        socket.emit('chat message', msg);
-        input.value = '';
-      }
-    });
-
-    toggleBtn.addEventListener('click', () => {
-      document.body.classList.toggle('dark');
-      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
-    });
-  </script>
-  <script>
-  const toggleBtn = document.getElementById('toggle-theme');
-  toggleBtn.addEventListener('click', () => {
-    document.body.classList.toggle('dark');
-  });
-</script>
-
+  <script src="script.js"></script>
 </body>
 </html>
 
