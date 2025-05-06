@@ -1,34 +1,39 @@
 const express = require('express');
 const path = require('path');
-const app = express();
+const http = require('http');
+const { Server } = require('socket.io');
 
-// Serwowanie plików statycznych z katalogu 'public'
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server); // <- definiujemy io tutaj
+
+// Serwowanie plików statycznych
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Obsługa żądania GET na '/'
+// Domyślna strona
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Obsługa połączenia z socket.io
 io.on('connection', (socket) => {
-  console.log('Użytkownik połączony');
+  console.log('Użytkownik podłączony');
 
   socket.on('chat message', (msg) => {
-    messages.push(msg);
     io.emit('chat message', msg);
   });
 
   socket.on('delete message', (id) => {
-    messages = messages.filter(msg => msg.id !== id);
     io.emit('delete message', id);
   });
 
   socket.on('disconnect', () => {
-    console.log('Użytkownik rozłączony');
+    console.log('Użytkownik odłączony');
   });
 });
 
+// Uruchomienie serwera
 const PORT = process.env.PORT || 3000;
-http.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Serwer działa na porcie ${PORT}`);
 });
