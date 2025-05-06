@@ -1,114 +1,75 @@
-:root {
-  --bg-color: #ffffff;
-  --text-color: #000000;
-  --input-bg: #f0f0f0;
-  --button-bg: #dddddd;
+body {
+  font-family: sans-serif;
+  margin: 0;
+  transition: background-color 0.5s, color 0.5s;
+}
+
+body.light {
+  background-color: #ffffff;
+  color: #000000;
 }
 
 body.dark {
-  --bg-color: #121212;
-  --text-color: #ffffff;
-  --input-bg: #2a2a2a;
-  --button-bg: #333333;
+  background-color: #1e1e1e;
+  color: #ffffff;
 }
 
-body {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  font-family: 'Segoe UI', sans-serif;
-  margin: 0;
-  padding: 2rem;
-  transition: background-color 0.6s ease, color 0.6s ease;
+#chat {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1rem;
 }
 
-h1 {
-  text-align: center;
-  margin-bottom: 1rem;
-}
-
-#toggle-theme {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  background-color: var(--button-bg);
-  color: var(--text-color);
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.4s, transform 0.2s;
-}
-#toggle-theme:hover {
-  transform: scale(1.05);
-}
-
-ul#messages {
+#messages {
   list-style: none;
   padding: 0;
-  max-height: 60vh;
-  overflow-y: auto;
   margin-bottom: 1rem;
 }
 
-ul#messages li {
-  background-color: var(--input-bg);
-  margin: 0.3rem 0;
-  padding: 0.6rem 1rem;
+#messages li {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
   border-radius: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: background-color 0.3s ease, opacity 0.3s ease;
+  background: #e0e0e0;
+  color: #000;
+  position: relative;
+  transition: all 0.3s ease;
 }
 
-.fade-in {
-  animation: fadeIn 0.4s ease forwards;
+body.dark #messages li {
+  background: #333;
+  color: #fff;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+#messages li:hover {
+  transform: scale(1.02);
 }
 
-form {
+#messages li button {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: red;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#form {
   display: flex;
   gap: 0.5rem;
 }
 
-input {
+#input {
   flex: 1;
   padding: 0.5rem;
-  border-radius: 8px;
-  border: none;
-  background-color: var(--input-bg);
-  color: var(--text-color);
-  transition: background-color 0.3s ease;
 }
 
-button {
-  background-color: var(--button-bg);
-  color: var(--text-color);
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-button:hover {
-  transform: scale(1.05);
+.theme-toggle {
+  position: absolute;
+  top: 10px;
+  right: 10px;
 }
 
-.delete-btn {
-  background: none;
-  border: none;
-  color: red;
-  font-size: 1rem;
-  cursor: pointer;
-  margin-left: 10px;
-}
+
