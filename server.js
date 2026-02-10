@@ -26,11 +26,15 @@ const storage = new CloudinaryStorage({
 const upload = multer({ storage: storage });
 
 const db = new Datastore({ filename: 'messages.db', autoload: true });
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '.')));
 
 // Endpoint do wysyłania zdjęć
 app.post('/upload', upload.single('file'), (req, res) => {
     res.json({ url: req.file.path });
+});
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 io.on('connection', (socket) => {
