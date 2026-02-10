@@ -1,62 +1,35 @@
-const socket = io();
-let currentChannel = 'general';
-
-const channelList = document.querySelectorAll('.channel');
-const messagesDiv = document.getElementById('messages');
-const form = document.getElementById('form');
-const input = document.getElementById('input');
-const usernameInput = document.getElementById('username');
-
-// Dołącz do kanału startowego
-socket.emit('join channel', currentChannel);
-
-// Obsługa zmiany kanału
-channelList.forEach(ch => {
-    ch.addEventListener('click', () => {
-        const newChannel = ch.getAttribute('data-name');
-        if (newChannel === currentChannel) return;
-
-        messagesDiv.innerHTML = ''; // Czyścimy ekran
-        currentChannel = newChannel;
-        
-        // Aktualizacja UI
-        document.querySelector('.channel.active').classList.remove('active');
-        ch.classList.add('active');
-        document.getElementById('current-channel-name').innerText = `# ${newChannel}`;
-        
-        socket.emit('join channel', currentChannel);
-    });
-});
-
-// Wysłanie wiadomości
-form.addEventListener('submit', (e) => {
-    e.preventDefault();
+// Dodaj to do obsługi wysyłania (form.addEventListener)
+async function sendMessage() {
+    const fileInput = document.getElementById('file-input');
     const msg = input.value;
     const user = usernameInput.value || 'Anonim';
-    
-    if (msg) {
-        socket.emit('chat message', { channel: currentChannel, msg, user });
-        input.value = '';
+
+    // Jeśli jest plik, najpierw go wyślij na serwer
+    if (fileInput.files.length > 0) {
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+        
+        const res = await fetch('/upload', { method: 'POST', body: formData });
+        const data = await res.json();
+        
+        socket.emit('chat message', { channel: currentChannel, msg: data.url, user, type: 'image' });
+        fileInput.value = '';
+    } else if (msg) {
+        socket.emit('chat message', { channel: currentChannel, msg, user, type: 'text' });
     }
-});
+    input.value = '';
+}
 
-// Odbieranie wiadomości
-socket.on('chat message', (data) => {
-    appendMessage(data);
-});
-
-// Ładowanie historii
-socket.on('load history', (history) => {
-    history.forEach(appendMessage);
-});
-
+// Zaktualizuj funkcję wyświetlania wiadomości
 function appendMessage(data) {
     const item = document.createElement('div');
     item.className = 'message-item';
-    item.innerHTML = `
-        <span class="message-user">${data.user}:</span>
-        <span class="message-text">${data.text}</span>
-    `;
+    
+    let content = data.type === 'image' 
+        ? `<img src="${data.text}" style="max-width: 300px; border-radius: 8px; display: block; margin-top: 5px;">` 
+        : `<span class="message-text">${data.text}</span>`;
+
+    item.innerHTML = `<span class="message-user">${data.user}:</span> ${content}`;
     messagesDiv.appendChild(item);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight; // Auto-scroll
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
