@@ -1,26 +1,35 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>net.com - Chat</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <title>KwanKlan</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="light">
-  <div class="theme-toggle">
-    <label>
-      <input type="checkbox" id="themeSwitch" />
-      <span class="slider"></span>
-    </label>
-  </div>
-  <div class="chat-container">
-    <input id="username" placeholder="Twoje imię..." />
-    <ul id="messages"></ul>
-    <form id="form">
-      <input id="input" autocomplete="off" placeholder="Wpisz wiadomość..." /><button>Wyślij</button>
-    </form>
-  </div>
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="script.js"></script>
+<body class="dark">
+    <div class="app-container">
+        <nav class="sidebar">
+            <div class="server-header">Friends Server</div>
+            <ul id="channel-list">
+                <li class="channel active" data-name="general"># general</li>
+                <li class="channel" data-name="gaming"># gaming</li>
+                <li class="channel" data-name="dev-talk"># dev-talk</li>
+            </ul>
+        </nav>
+
+        <main class="chat-area">
+            <header class="chat-header">
+                <span id="current-channel-name"># general</span>
+            </header>
+            <div id="messages"></div>
+            <form id="form">
+                <input id="username" placeholder="Username..." />
+                <input id="input" autocomplete="off" placeholder="Message #general" />
+                <button>Send</button>
+            </form>
+        </main>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
