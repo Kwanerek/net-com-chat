@@ -1,36 +1,62 @@
 const socket = io();
+let currentChannel = 'general';
+
+const channelList = document.querySelectorAll('.channel');
+const messagesDiv = document.getElementById('messages');
 const form = document.getElementById('form');
 const input = document.getElementById('input');
-const messages = document.getElementById('messages');
 const usernameInput = document.getElementById('username');
-const themeSwitch = document.getElementById('themeSwitch');
 
-themeSwitch.addEventListener('change', () => {
-  document.body.classList.toggle('dark', themeSwitch.checked);
-  document.body.classList.toggle('light', !themeSwitch.checked);
+// Dołącz do kanału startowego
+socket.emit('join channel', currentChannel);
+
+// Obsługa zmiany kanału
+channelList.forEach(ch => {
+    ch.addEventListener('click', () => {
+        const newChannel = ch.getAttribute('data-name');
+        if (newChannel === currentChannel) return;
+
+        messagesDiv.innerHTML = ''; // Czyścimy ekran
+        currentChannel = newChannel;
+        
+        // Aktualizacja UI
+        document.querySelector('.channel.active').classList.remove('active');
+        ch.classList.add('active');
+        document.getElementById('current-channel-name').innerText = `# ${newChannel}`;
+        
+        socket.emit('join channel', currentChannel);
+    });
 });
 
+// Wysłanie wiadomości
 form.addEventListener('submit', (e) => {
-  e.preventDefault();
-  if (input.value && usernameInput.value) {
-    const message = { id: Date.now(), name: usernameInput.value, text: input.value };
-    socket.emit('chat message', message);
-    input.value = '';
-  }
+    e.preventDefault();
+    const msg = input.value;
+    const user = usernameInput.value || 'Anonim';
+    
+    if (msg) {
+        socket.emit('chat message', { channel: currentChannel, msg, user });
+        input.value = '';
+    }
 });
 
-socket.on('chat message', (msg) => {
-  const item = document.createElement('li');
-  item.textContent = msg.name + ': ' + msg.text;
-  item.dataset.id = msg.id;
-  item.addEventListener('click', () => {
-    socket.emit('delete message', msg.id);
-  });
-  messages.appendChild(item);
-  messages.scrollTop = messages.scrollHeight;
+// Odbieranie wiadomości
+socket.on('chat message', (data) => {
+    appendMessage(data);
 });
 
-socket.on('delete message', (id) => {
-  const msg = document.querySelector(`li[data-id="${id}"]`);
-  if (msg) msg.remove();
+// Ładowanie historii
+socket.on('load history', (history) => {
+    history.forEach(appendMessage);
 });
+
+function appendMessage(data) {
+    const item = document.createElement('div');
+    item.className = 'message-item';
+    item.innerHTML = `
+        <span class="message-user">${data.user}:</span>
+        <span class="message-text">${data.text}</span>
+    `;
+    messagesDiv.appendChild(item);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight; // Auto-scroll
+}
